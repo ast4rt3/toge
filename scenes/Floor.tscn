@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://floor_scene_uid"]
+
+[ext_resource type="Texture2D" path="res://icon.svg" id="1_icon"]
+
+[node name="Floor" type="Node2D" groups=["floor"]]
+z_index = -1
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.1, 0.1, 0.1, 1)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_icon")

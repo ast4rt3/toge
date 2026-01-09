@@ -7,8 +7,10 @@ This is a procedural 2D roguelike game template built in Godot 4.
 2. Press **F5** to run the game.
 3. **Controls**:
     - **WASD**: Move
+    - **WASD**: Move (Free Look)
     - **Space**: Dash (Cooldown: 1s)
-    - **Mouse**: Aim
+    - **Right Click (Hold)**: Aim Mode (Laser Sight, Slow Move)
+    - **Left Click**: Fire (High Recoil, One-Shot Kill)
 4. **Goal**: Survive!
     - **Safe Zone**: The starting room has a **green overlay**. Enemies **cannot enter** this area.
     - **Combat**: Leave the safe zone to fight.

@@ -102,13 +102,14 @@ func check_collisions():
 		var collider = collision.get_collider()
 		
 		if collider.is_in_group("player"):
-			call_deferred("game_over")
+			if collider.has_method("take_damage"):
+				collider.take_damage(1)
 		elif collider.is_in_group("barrier"):
 			# Hit safe zone -> Retreat
 			current_state = State.RETREAT
 
-func game_over():
-	get_tree().reload_current_scene()
+# func game_over(): # Removed as it's now handled by Player
+# 	get_tree().reload_current_scene()
 
 func _draw():
 	# Draw aggro range in editor or debug build

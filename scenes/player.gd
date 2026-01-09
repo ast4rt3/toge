@@ -6,6 +6,10 @@ extends CharacterBody2D
 @export var dash_cooldown = 1.0
 @export var shoot_cooldown = 1.0
 @export var recoil_force = 200.0
+@export var max_hp = 5
+
+var hp = max_hp
+var invulnerability_timer = 0.0
 
 var is_dashing = false
 var dash_timer = 0.0
@@ -13,6 +17,32 @@ var dash_cooldown_timer = 0.0
 var shoot_timer = 0.0
 
 var projectile_scene = preload("res://scenes/Projectile.tscn")
+
+func _ready():
+	update_hp_ui()
+
+func take_damage(amount):
+	if invulnerability_timer > 0: return
+	
+	hp -= amount
+	update_hp_ui()
+	
+	if hp <= 0:
+		die()
+	else:
+		# I-frames
+		invulnerability_timer = 1.0
+		modulate = Color(1, 0, 0) # Flash red
+		
+func update_hp_ui():
+	if has_node("CanvasLayer/HPLabel"):
+		$CanvasLayer/HPLabel.text = "HP: " + str(hp) + "/" + str(max_hp)
+
+func die():
+	set_physics_process(false)
+	$CanvasLayer/GameOverLabel.visible = true
+	await get_tree().create_timer(3.0).timeout
+	get_tree().reload_current_scene()
 # ... (rest of physics process is fine, logic uses shoot_cooldown variable)
 
 func shoot(target_pos):
@@ -46,6 +76,15 @@ func _physics_process(delta):
 		dash_cooldown_timer -= delta
 	if shoot_timer > 0:
 		shoot_timer -= delta
+		
+	# Invulnerability
+	if invulnerability_timer > 0:
+		invulnerability_timer -= delta
+		if invulnerability_timer <= 0:
+			modulate = Color(1, 1, 1) # Reset color
+		else:
+			# Blink effect
+			modulate.a = 0.5 if Engine.get_frames_drawn() % 10 < 5 else 1.0
 		
 	# Decay knockback
 	knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, 1000.0 * delta)

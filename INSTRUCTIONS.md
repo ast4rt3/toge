@@ -25,8 +25,9 @@ This is a procedural 2D roguelike game template built in Godot 4.
         - **Debug Mode**: Shows Placeholders (Blocks/Icons) for clarity.
         - **Debug Mode**: Shows Placeholders (Blocks/Icons) for clarity.
         - **Normal Mode**: Shows Assets (Cave Tileset).
-        - **Customizing Walls**: Open `scenes/WallFront.tscn` (and Top/Left/Right) to change the look of each wall side individually.
+        - **Customizing Walls**: Open `scenes/WallFront.tscn` (and Top/Left/Right/Column) to change the look of each wall side individually.
         - **Random Variation**: If you select a Texture Region larger than 32x32 (e.g. 96x32), the game will randomly pick one 32x32 tile from that area for each instance!
+        - **Shadows**: `WallFront` now has a built-in Shadow. You can adjust its size/color in the scene.
 
 ## Project Structure
 - `scenes/Level.tscn`: Main scene. Contains the procedural generator.

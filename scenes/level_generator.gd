@@ -16,6 +16,7 @@ var wall_scene = preload("res://scenes/Wall.tscn")
 @onready var wall_top_scene = preload("res://scenes/WallTop.tscn")
 @onready var wall_left_scene = preload("res://scenes/WallLeft.tscn")
 @onready var wall_right_scene = preload("res://scenes/WallRight.tscn")
+@onready var column_scene = preload("res://scenes/Column.tscn")
 
 var player_scene = preload("res://scenes/Player.tscn")
 var enemy_scene = preload("res://scenes/Enemy.tscn")
@@ -121,19 +122,38 @@ func generate_walls(floor_tiles: Dictionary):
 		for dir in directions:
 			var neighbor = pos + dir
 			
-			# If this neighbor is NOT a floor and hasn't been processed
 			if not floor_tiles.has(neighbor) and not wall_positions.has(neighbor):
-				
-				# Determine which wall scene to use based on adjacency to floors
 				var w = null
 				
-				# Check neighbors of this wall spot to see where the floor is
 				var floor_down  = floor_tiles.has(neighbor + Vector2i.DOWN)
 				var floor_up    = floor_tiles.has(neighbor + Vector2i.UP)
 				var floor_right = floor_tiles.has(neighbor + Vector2i.RIGHT)
 				var floor_left  = floor_tiles.has(neighbor + Vector2i.LEFT)
 				
-				if floor_down:
+				# Count adjacent floors to detect corners
+				var adjacent_floors = 0
+				if floor_down: adjacent_floors += 1
+				if floor_up: adjacent_floors += 1
+				if floor_right: adjacent_floors += 1
+				if floor_left: adjacent_floors += 1
+				
+				# Logic:
+				# 1. If it's a corner (e.g. Down AND Right), use Column.
+				# 2. If it's a straight edge (Only Down), use WallFront.
+				
+				var is_corner = (floor_down and floor_right) or \
+								(floor_down and floor_left) or \
+								(floor_up and floor_right) or \
+								(floor_up and floor_left)
+								
+				# Actually, the "Column" idea is usually for OUTSIDE corners too. 
+				# But for simplicity, let's use Columns for any spot that isn't a simple straight wall.
+				
+				if is_corner or adjacent_floors == 0: 
+					# Adjacent==0 means it's surrounded by walls (internal corner) OR diagonals only.
+					# Let's use Column for interest.
+					w = column_scene.instantiate()
+				elif floor_down:
 					w = wall_front_scene.instantiate()
 				elif floor_up:
 					w = wall_top_scene.instantiate()
@@ -142,8 +162,7 @@ func generate_walls(floor_tiles: Dictionary):
 				elif floor_left:
 					w = wall_right_scene.instantiate()
 				else:
-					# Default / Corner case
-					w = wall_front_scene.instantiate()
+					w = column_scene.instantiate()
 					
 				w.position = Vector2(neighbor) * tile_size
 				add_child(w)

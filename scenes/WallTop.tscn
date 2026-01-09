@@ -15,7 +15,7 @@ script = ExtResource("1_script")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("3_asset")
 region_enabled = true
-region_rect = Rect2(640, 664, 32, 32)
+region_rect = Rect2(624, 416, 32, 32)
 
 [node name="DebugSprite" type="Sprite2D" parent="."]
 visible = false

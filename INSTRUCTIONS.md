@@ -9,15 +9,23 @@ This is a procedural 2D roguelike game template built in Godot 4.
     - **WASD**: Move
     - **WASD**: Move (Free Look)
     - **Space**: Dash (Cooldown: 1s)
-    - **Right Click (Hold)**: Aim Mode (Laser Sight, Slow Move)
-    - **Left Click**: Fire (High Recoil, One-Shot Kill)
+    - **Q**: Switch Weapon (Sniper <-> Katana)
+    - **Right Click (Hold)**: Aim Mode (Rotate towards mouse, move slower)
+    - **Left Click**: Attack (Shoot or Slash)
 4. **Goal**: Survive!
     - **HP**: You have **5 HP**. Taking damage grants temporary invulnerability.
     - **Death**: Reaching 0 HP triggers a Game Over screen.
+    - **Weapons**:
+        - **Sniper**: Long range, requires aiming. High recoil.
+        - **Katana**: Close range, wide slash. Steps forward on attack (Lunge).
     - **Enemies**: Beware the **Zombies**! They chase you relentlessly.
     - **Safe Zone**: The starting room has a **green overlay**. Zombies **cannot enter** this area.
     - **Combat**: Leave the safe zone to fight.
-    - **Debug**: Press **F1** to toggle debug visuals (Shows **Icon** instead of Zombie, shows Aggro Circle).
+    - **Debug**: Press **F1** to toggle debug visuals.
+        - **Debug Mode**: Shows Placeholders (Blocks/Icons) for clarity.
+        - **Debug Mode**: Shows Placeholders (Blocks/Icons) for clarity.
+        - **Normal Mode**: Shows Assets (Cave Tileset).
+        - **Customizing Walls**: Open `scenes/WallFront.tscn` (and Top/Left/Right) to change the look of each wall side individually.
 
 ## Project Structure
 - `scenes/Level.tscn`: Main scene. Contains the procedural generator.

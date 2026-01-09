@@ -8,7 +8,15 @@ extends Node2D
 @export var enemy_count_per_room = 2
 
 var floor_scene = preload("res://scenes/Floor.tscn")
+var barrier_scene = preload("res://scenes/Barrier.tscn")
+@onready var decoration_scene = preload("res://scenes/Decoration.tscn")
+
 var wall_scene = preload("res://scenes/Wall.tscn")
+@onready var wall_front_scene = preload("res://scenes/WallFront.tscn")
+@onready var wall_top_scene = preload("res://scenes/WallTop.tscn")
+@onready var wall_left_scene = preload("res://scenes/WallLeft.tscn")
+@onready var wall_right_scene = preload("res://scenes/WallRight.tscn")
+
 var player_scene = preload("res://scenes/Player.tscn")
 var enemy_scene = preload("res://scenes/Enemy.tscn")
 
@@ -46,6 +54,12 @@ func generate_level():
 			var b = barrier_scene.instantiate()
 			b.position = Vector2(pos) * tile_size
 			add_child(b)
+		else:
+			# Chance to spawn decoration in other rooms (10% chance)
+			if randf() < 0.1:
+				var d = decoration_scene.instantiate()
+				d.position = Vector2(pos) * tile_size
+				add_child(d)
 
 	# Instantiate Walls (Perimeter)
 	generate_walls(floor_tiles)
@@ -106,8 +120,31 @@ func generate_walls(floor_tiles: Dictionary):
 	for pos in floor_tiles.keys():
 		for dir in directions:
 			var neighbor = pos + dir
+			
+			# If this neighbor is NOT a floor and hasn't been processed
 			if not floor_tiles.has(neighbor) and not wall_positions.has(neighbor):
-				var w = wall_scene.instantiate()
+				
+				# Determine which wall scene to use based on adjacency to floors
+				var w = null
+				
+				# Check neighbors of this wall spot to see where the floor is
+				var floor_down  = floor_tiles.has(neighbor + Vector2i.DOWN)
+				var floor_up    = floor_tiles.has(neighbor + Vector2i.UP)
+				var floor_right = floor_tiles.has(neighbor + Vector2i.RIGHT)
+				var floor_left  = floor_tiles.has(neighbor + Vector2i.LEFT)
+				
+				if floor_down:
+					w = wall_front_scene.instantiate()
+				elif floor_up:
+					w = wall_top_scene.instantiate()
+				elif floor_right:
+					w = wall_left_scene.instantiate()
+				elif floor_left:
+					w = wall_right_scene.instantiate()
+				else:
+					# Default / Corner case
+					w = wall_front_scene.instantiate()
+					
 				w.position = Vector2(neighbor) * tile_size
 				add_child(w)
 				wall_positions[neighbor] = true

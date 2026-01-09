@@ -1,11 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://floor_scene_uid"]
+[gd_scene load_steps=4 format=3 uid="uid://bgwoxcb05v3e"]
 
-[ext_resource type="Texture2D" path="res://icon.svg" id="1_icon"]
+[ext_resource type="Script" uid="uid://bn5sbo47axgh0" path="res://scenes/env_object.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://vly26rydd8lo" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://bdn04kwam2k2w" path="res://walls/walls.png" id="2_vkctt"]
 
 [node name="Floor" type="Node2D" groups=["floor"]]
 z_index = -1
+script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_vkctt")
+region_enabled = true
+region_rect = Rect2(0, 544, 512, 280)
+
+[node name="DebugSprite" type="Sprite2D" parent="."]
+visible = false
 modulate = Color(0.1, 0.1, 0.1, 1)
 scale = Vector2(0.25, 0.25)
-texture = ExtResource("1_icon")
+texture = ExtResource("2_icon")

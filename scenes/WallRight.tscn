@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://chxlkn8o53qdu"]
+
+[ext_resource type="Script" uid="uid://bn5sbo47axgh0" path="res://scenes/env_object.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://vly26rydd8lo" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://modc3j4iosh8" path="res://Asset_cave/MainLev2.0.png" id="3_asset"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(32, 32)
+
+[node name="WallRight" type="StaticBody2D" groups=["wall"]]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_asset")
+region_enabled = true
+region_rect = Rect2(504, 672, 32, 32)
+
+[node name="DebugSprite" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(0.2, 0.2, 0.2, 1)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_icon")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_1")

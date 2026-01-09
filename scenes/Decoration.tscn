@@ -1,21 +1,19 @@
-[gd_scene load_steps=5 format=3 uid="uid://decoration_scene_uid"]
+[gd_scene load_steps=5 format=3 uid="uid://bv8g446aigcne"]
 
-[ext_resource type="Script" path="res://scenes/decoration.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
-[ext_resource type="Texture2D" path="res://Asset_cave/decorative.png" id="3_asset"]
+[ext_resource type="Script" uid="uid://bsfc3uy284tv8" path="res://scenes/decoration.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://vly26rydd8lo" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://4h5svwh56uya" path="res://Asset_cave/decorative.png" id="3_asset"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(24, 24)
 
 [node name="Decoration" type="StaticBody2D" groups=["decoration"]]
-collision_layer = 1
-collision_mask = 1
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("3_asset")
 region_enabled = true
-region_rect = Rect2(0, 0, 32, 32)
+region_rect = Rect2(6.8589783, 34.333984, 82.58255, 96.86374)
 
 [node name="DebugSprite" type="Sprite2D" parent="."]
 visible = false
@@ -25,4 +23,4 @@ texture = ExtResource("2_icon")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_1")
-disabled = true # Default disabled (some props might be walkthrough)
+disabled = true

@@ -14,8 +14,10 @@ This is a procedural 2D roguelike game template built in Godot 4.
 4. **Goal**: Survive!
     - **HP**: You have **5 HP**. Taking damage grants temporary invulnerability.
     - **Death**: Reaching 0 HP triggers a Game Over screen.
-    - **Safe Zone**: The starting room has a **green overlay**. Enemies **cannot enter** this area.
+    - **Enemies**: Beware the **Zombies**! They chase you relentlessly.
+    - **Safe Zone**: The starting room has a **green overlay**. Zombies **cannot enter** this area.
     - **Combat**: Leave the safe zone to fight.
+    - **Debug**: Press **F1** to toggle debug visuals (Shows **Icon** instead of Zombie, shows Aggro Circle).
 
 ## Project Structure
 - `scenes/Level.tscn`: Main scene. Contains the procedural generator.

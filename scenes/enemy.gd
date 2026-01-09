@@ -11,9 +11,57 @@ enum State { IDLE, CHASE, RETREAT }
 var current_state = State.IDLE
 var home_position = Vector2.ZERO
 
+static var zombie_frames: SpriteFrames
+
 func _ready():
 	home_position = global_position
 	hp = max_hp
+	Globals.debug_toggled.connect(_on_debug_toggled)
+	
+	if not zombie_frames:
+		load_zombie_frames()
+	
+	$AnimatedSprite2D.sprite_frames = zombie_frames
+	$AnimatedSprite2D.play("idle")
+	
+	# Initial Debug State
+	_on_debug_toggled(Globals.debug_mode)
+
+func _on_debug_toggled(active):
+	$AnimatedSprite2D.visible = not active
+	$DebugSprite.visible = active
+	queue_redraw()
+
+func load_zombie_frames():
+	zombie_frames = SpriteFrames.new()
+	zombie_frames.remove_animation("default")
+	
+	# Load Idle (1-15)
+	zombie_frames.add_animation("idle")
+	zombie_frames.set_animation_loop("idle", true)
+	zombie_frames.set_animation_speed("idle", 15)
+	for i in range(1, 16):
+		var path = "res://zombiefiles/png/male/Idle (%d).png" % i
+		if ResourceLoader.exists(path):
+			zombie_frames.add_frame("idle", load(path))
+			
+	# Load Walk (1-10)
+	zombie_frames.add_animation("walk")
+	zombie_frames.set_animation_loop("walk", true)
+	zombie_frames.set_animation_speed("walk", 10)
+	for i in range(1, 11):
+		var path = "res://zombiefiles/png/male/Walk (%d).png" % i
+		if ResourceLoader.exists(path):
+			zombie_frames.add_frame("walk", load(path))
+
+	# Load Dead (1-12)
+	zombie_frames.add_animation("dead")
+	zombie_frames.set_animation_loop("dead", false)
+	zombie_frames.set_animation_speed("dead", 12)
+	for i in range(1, 13):
+		var path = "res://zombiefiles/png/male/Dead (%d).png" % i
+		if ResourceLoader.exists(path):
+			zombie_frames.add_frame("dead", load(path))
 
 func take_damage(amount, knockback_vector):
 	hp -= amount
@@ -37,18 +85,14 @@ func die(knockback_vector):
 	# Disable collision
 	$CollisionShape2D.set_deferred("disabled", true)
 	
-	# Death Juice: Flash + Fly back + Fade
-	modulate = Color(1, 0, 0) # Flash Red
+	# Play Dead Animation
+	$AnimatedSprite2D.play("dead")
+	
+	await $AnimatedSprite2D.animation_finished
+	
+	# Fade out after animation
 	var tween = create_tween()
-	
-	# Rotate wildly
-	var target_rot = rotation + randf_range(-5, 5)
-	
-	tween.set_parallel(true)
-	tween.tween_property(self, "rotation", target_rot, 0.5)
-	tween.tween_property(self, "modulate:a", 0.0, 0.5) # Fade out
-	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.1).set_trans(Tween.TRANS_BOUNCE) # Pop up
-	
+	tween.tween_property(self, "modulate:a", 0.0, 1.0)
 	await tween.finished
 	queue_free()
 
@@ -67,13 +111,20 @@ func _physics_process(_delta):
 	
 	match current_state:
 		State.IDLE:
+			$AnimatedSprite2D.play("idle")
 			if dist_to_player < aggro_range:
 				current_state = State.CHASE
 		
 		State.CHASE:
+			$AnimatedSprite2D.play("walk")
 			if player:
 				var direction = (player.global_position - global_position).normalized()
 				velocity = direction * speed
+				
+				# Flip sprite
+				if direction.x != 0:
+					$AnimatedSprite2D.flip_h = direction.x < 0
+					
 				move_and_slide()
 				check_collisions()
 				
@@ -84,8 +135,13 @@ func _physics_process(_delta):
 				current_state = State.RETREAT
 
 		State.RETREAT:
+			$AnimatedSprite2D.play("walk")
 			var direction = (home_position - global_position).normalized()
 			var dist_to_home = global_position.distance_to(home_position)
+			
+			# Flip sprite
+			if direction.x != 0:
+				$AnimatedSprite2D.flip_h = direction.x < 0
 			
 			# Move faster when retreating
 			velocity = direction * (speed * 1.5)
@@ -112,6 +168,8 @@ func check_collisions():
 # 	get_tree().reload_current_scene()
 
 func _draw():
+	if not Globals.debug_mode: return
+	
 	# Draw aggro range in editor or debug build
 	# Yellow circle outline
 	draw_circle(Vector2.ZERO, aggro_range, Color(1, 1, 0, 0.1))

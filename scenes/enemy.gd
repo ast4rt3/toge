@@ -1,9 +1,10 @@
 extends CharacterBody2D
 
 @export var speed = 100.0
+@export var aggro_range = 150.0
 
-enum State { CHASE, RETREAT }
-var current_state = State.CHASE
+enum State { IDLE, CHASE, RETREAT }
+var current_state = State.IDLE
 var home_position = Vector2.ZERO
 
 func _ready():
@@ -11,28 +12,40 @@ func _ready():
 
 func _physics_process(_delta):
 	var player = get_tree().get_first_node_in_group("player")
+	var dist_to_player = 99999.0
+	if player:
+		dist_to_player = global_position.distance_to(player.global_position)
 	
-	if current_state == State.CHASE:
-		if player:
-			var direction = (player.global_position - global_position).normalized()
-			velocity = direction * speed
-			move_and_slide()
-			check_collisions()
+	match current_state:
+		State.IDLE:
+			if dist_to_player < aggro_range:
+				current_state = State.CHASE
+		
+		State.CHASE:
+			if player:
+				var direction = (player.global_position - global_position).normalized()
+				velocity = direction * speed
+				move_and_slide()
+				check_collisions()
+				
+				# Lose aggro if too far (optional, let's say 1.5x range)
+				if dist_to_player > aggro_range * 1.5:
+					current_state = State.RETREAT
+			else:
+				current_state = State.RETREAT
+
+		State.RETREAT:
+			var direction = (home_position - global_position).normalized()
+			var dist_to_home = global_position.distance_to(home_position)
 			
-	elif current_state == State.RETREAT:
-		var direction = (home_position - global_position).normalized()
-		var dist = global_position.distance_to(home_position)
-		
-		# Move faster when retreating
-		velocity = direction * (speed * 1.5)
-		move_and_slide()
-		
-		# If back home, idle or resume chase check (only if player is far?)
-		if dist < 10.0:
-			# For now, just reset to Chase, but maybe wait?
-			# If we reset immediately and player is still there, we loop.
-			# But player should be far away if they are in safe zone.
-			current_state = State.CHASE
+			# Move faster when retreating
+			velocity = direction * (speed * 1.5)
+			move_and_slide()
+			
+			if dist_to_home < 5.0:
+				current_state = State.IDLE
+
+	queue_redraw() # Request redraw for debug circle
 
 func check_collisions():
 	for i in get_slide_collision_count():
@@ -47,3 +60,9 @@ func check_collisions():
 
 func game_over():
 	get_tree().reload_current_scene()
+
+func _draw():
+	# Draw aggro range in editor or debug build
+	# Yellow circle outline
+	draw_circle(Vector2.ZERO, aggro_range, Color(1, 1, 0, 0.1))
+	draw_arc(Vector2.ZERO, aggro_range, 0, TAU, 32, Color(1, 1, 0, 0.5), 1.0)
